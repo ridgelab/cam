@@ -122,20 +122,15 @@ def printSpeciesNotFound(newick,specieslist,outfile):
 	Writes to the output file a list of all species that were not included in the reference tree.
 	'''
 	foundlist = re.split(',|\(|\)',newick.encode('ascii','ignore'))
-	foundlist = [x for x in foundlist if x.count('_') > 0]
+	foundlist = [x for x in foundlist if len(x) > 0]
 	foundlist = [x.replace("_"," ") for x in foundlist]
 	allSpeciesNotFound = list(set(specieslist) - set(foundlist))
 	if outfile != "":
-		outfile.write("\nSpecies not found: " + str(len(allSpeciesNotFound)) + "\n")
 		if len(allSpeciesNotFound) > 0:
-			for notfound in allSpeciesNotFound[:-1]:
-				outfile.write(notfound + ", ")
-			outfile.write(allSpeciesNotFound[-1])
+			outfile.write("\nSpecies not found: " + ",".join(allSpeciesNotFound) + "\n")
 	else:
-		sys.stdout.write("\nSpecies not found: " + str(len(allSpeciesNotFound)) + "\n")
-		for notfound in allSpeciesNotFound[:-1]:
-			sys.stdout.write(notfound + ", ")
-		sys.stdout.write(allSpeciesNotFound[-1] + "\n")
+		if len(allSpeciesNotFound) > 0:
+			sys.stdout.write("\nSpecies not found: " + ",".join(allSpeciesNotFound) + "\n")
 
 def readFile(args):
 	'''
@@ -160,16 +155,14 @@ def readFile(args):
 		return
 	newick = re.sub("\)[A-z_]+",")",newick)
 	newick = re.sub("_"," ",newick)
+	outfile = sys.stdout
 	if args.output:
 		outfile = open(args.output, "w")
-		outfile.write(newick + "\n")
-		if not args.excludeSpeciesNotFound:
-			printSpeciesNotFound(newick,specieslist,outfile)
+	outfile.write(newick + "\n")
+	if not args.excludeSpeciesNotFound:
+		printSpeciesNotFound(newick,specieslist,outfile)
+	if args.output:
 		outfile.close()
-	else:
-		sys.stdout.write(newick + "\n")
-		if not args.excludeSpeciesNotFound:
-			printSpeciesNotFound(newick,specieslist,"")
 
 def formatOTTidRequests(specieslist):
 	'''
