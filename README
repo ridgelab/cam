@@ -1,0 +1,92 @@
+##########################
+
+Codon Aversion Motif Distance Matrix
+cam.py
+Created By: Justin Miller
+Email: jmiller@byu.edu
+
+##########################
+
+Purpose: Create a distance matrix using codon aversion.
+
+##########################
+
+ARGUMENT OPTIONS:
+
+	-h, --help            show this help message and exit
+	-i [INPUT [INPUT ...]]Input Fasta Files
+	-id INPUTDIR          Input Directory with Fasta Files
+	-o OUTPUT             Output File
+	-t THREADS            Number of Cores
+	-p PERCENT            Percent of codon aversion tuples that must overlap between species
+	-c OCCURANCES         Number of Occurances
+	-w WRITE         	  Immediately writes the distance matrix. Header will be on the bottom.
+	-rna                  Flag for RNA sequences
+
+##########################
+
+REQUIREMENTS:
+
+cam.py uses Python version 2.7
+
+Python libraries that must be installed include:
+1. sys
+2. multiprocessing
+3. argparse
+4. re
+5. collections
+6. itertools
+7. os (optional if using -id option)
+8. gzip (optional if using gzip files)
+
+If any of those libraries is not currently in your Python Path, use the following command:
+pip install --user [library_name]
+to install the library to your path.
+
+##########################
+
+Input Files:
+This algorithm requires two or more fasta files, or a directory which contains two or more fasta files.
+
+Output File:
+An output file is not required. If an output file is not supplied, the distance matrix will be written to standard out.
+
+##########################
+
+USAGE:
+
+Typical usage requires the -i or the -id option. When using -i, input file names are space separated, 
+with two or more files required. The algorithm will compare all sequences in all files to find 
+all codon aversion motifs.
+
+By default, all possible threads are used. If you want to change that, use the -t option.
+
+By default, DNA sequences are expected. 
+
+By default, the distance matrix is first stored in memory and then written to the output file 
+	or standard out. This allows the header line to be at the top.
+
+
+Example usage:
+python cam.py -id testFiles/mammals/ -o output
+python cam.py -i testFiles/mammals/* > output
+
+
+Running one of the above commands will produce a single output called output in the current directory.
+This command should take under a minute on a single core. If your machine allows multithreading, it should finish much faster.
+
+##########################
+
+License:
+
+This algorithm is free for all academic and non-profit research purposes. 
+
+We only ask that you please cite the following paper if you use this algorithm:
+Codon Aversion Motifs: An alignment-free method to recover phylogenies.
+
+For any for-profit usage, please contact Justin Miller at jmiller@byu.edu
+
+##########################
+
+Thank you, and happy researching!!
+

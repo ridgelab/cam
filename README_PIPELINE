@@ -1,0 +1,63 @@
+##########################
+
+Pipeline 
+Compiled By: Justin Miller
+Email: jmiller@byu.edu
+
+##########################
+
+Purpose: Recover a Phylogeny with Codon Aversion and Compare it to The Open Tree of Life.
+
+##########################
+
+REQUIREMENTS:
+
+See requirements in README and README_getOTLtree
+
+##########################
+
+Step 1:
+Move all coding sequences (CDS) in FASTA format into a directory, one for each species. 
+Each fasta file should be in the format {species_name}{.gz}, with the .gz being used if the file is gzipped.
+An example of a directory with correctly formatted CDS files is in the test/mammals/ directory.
+
+Step 2:
+Create a Distance Matrix using cam.py
+Examples of possible ways to do this are in the README. The recommended method is:
+python cam.py -id testFiles/mammals/ -o output
+
+Step 3:
+Recover a phylogeny using the distance matrix.
+We provide a script to recover a phylogeny using BioPython, makeNewick.py.
+python makeNewick.py -i output -o output.nwk
+
+Step 4:
+Infer the phylogeny of these species from the Open Tree of Life.
+See README_getOTLtree for more information.
+The recommended method is:
+python getOTLtree.py -i output.nwk  -o OTL.nwk
+
+Step 5:
+Compare the recovered phylogeny using cam.py with the Open Tree of Life.
+This optional step requires the ETE toolkit (http://etetoolkit.org/download/)
+The command we use to compare the trees is:
+ete3 compare -t output.nwk -r OTL.nwk --unrooted
+The columns with -br+ show the percent similarity between the recovered phylogeny
+and the Open Tree of Life.
+
+
+##########################
+
+License:
+
+This algorithm is free for all academic and non-profit research purposes. 
+
+We only ask that you please cite the following paper if you use this algorithm:
+Codon Aversion Motifs: An alignment-free method to recover phylogenies.
+
+For any for-profit usage, please contact Justin Miller at jmiller@byu.edu
+
+##########################
+
+Thank you, and happy researching!!
+

@@ -1,0 +1,96 @@
+##########################
+
+Retrieve Open Tree of Life Phylogenetic Reference Tree
+getOTLree.py
+Created By: Lauren McKinnon
+Email: laurenmckinnon77@gmail.com
+
+##########################
+
+Purpose: Retrieve an Open Tree of Life reference tree.
+
+##########################
+
+ARGUMENT OPTIONS:
+
+	-h, --help            show this help message and exit
+	-i INPUT              Input Newick Tree file
+	-o OUTPUT             Output File Name
+	-e EXCLUDE			  Exclude the list of species not found in tree
+
+##########################
+
+REQUIREMENTS:
+
+getOTLtree.py uses Python version 2.7
+
+Python libraries that must be installed include:
+1. sys
+2. argparse
+3. requests,json
+4. re
+
+If any of those libraries is not currently in your Python Path, use the following command:
+pip install --user [library_name]
+to install the library to your path.
+
+##########################
+
+Input File:
+This algorithm requires a phylogenetic tree in Newick format.
+The input file may also be a file of multiple of phylogenetic trees separated by line.
+
+Output File:
+An output file is not required. If an output file is not supplied, the phylogenetic tree
+	will be written to standard out.
+
+##########################
+
+USAGE:
+
+Typical usage requires the -i option.
+The algorithm will use all the names of species in the input file to retrieve
+	a reference phylogenetic tree from the Open Tree of Life database.
+
+Example input Newick tree:
+	(Spiroplasma_taiwanense,(Mycoplasma_pulmonis,(Mycoplasma_anseris,Mycoplasma_glycophilum)));
+	
+	A malformatted Newick tree file will also work, as will putting all species on a separate line or
+	separating species by commas. All parentheses, commas, semicolons, and end-of-line
+	characters are removed from the input file. Underscores are replaced by spaces.
+
+By default, the reference phylogenetic tree is first stored in memory and then written to the output file 
+	or standard out.
+
+By default, a list of species that could not be included in the reference tree is also written to the
+	output file. To ignore this behavior, include the -e option.
+
+Example usage:
+python getOTLtree.py -i testFiles/OTL/test.nwk  -e -o outputName
+python getOTLtree.py -i testFiles/OTL/speciesNames.txt
+python getOTLtree.py -i speciesNames.txt -e
+
+
+Running the first of the above commands will produce an output file for each tree in the input file
+	called outputName[lineNumber] in the current directory. If the input file contains only one tree,
+	a single output file will be produced in the current directory.
+
+Running the second of the above commands will write to standard out the reference phylogenetic trees.
+	This command should take a few seconds on a single core.
+
+Running the third of the above commands will write to standard out the reference phylogenetic trees 
+	without the extra information of species not included.
+
+##########################
+
+This algorithm is free for all academic and non-profit research purposes. 
+
+We only ask that you please cite the following paper if you use this algorithm:
+Codon Aversion Motifs: An alignment-free method to recover phylogenies.
+
+For any for-profit usage, please contact Lauren McKinnon at laurenmckinnon77@gmail.com 
+
+##########################
+
+Thank you, and happy researching!!
+
