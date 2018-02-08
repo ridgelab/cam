@@ -5,8 +5,17 @@ writes a newick tree to standard out.
 
 '''
 import sys
+import os
 import argparse
 
+def checkTempNum(TEMP_FILE_NUM):
+	'''
+	Ensures that the same temporary file is not used.
+	'''
+	for fname in os.listdir('.'):
+	    if fname.endswith(TEMP_FILE_NUM):
+			return True
+	return False
 
 
 def getSpeciesDistances(fileName):
@@ -37,16 +46,18 @@ def writeNewick(species, distance,output):
 	distanceMatrix = TreeConstruction._DistanceMatrix(species,distance)
 	treeConstructor = TreeConstruction.DistanceTreeConstructor(method = 'nj')
 	njTree = treeConstructor.nj(distanceMatrix)
-	tempFile = open("tempFile102903",'w')	
+	TEMP_FILE_NUM = str(int(os.urandom(3).encode('hex'),16))
+	while checkTempNum(TEMP_FILE_NUM):
+		TEMP_FILE_NUM = str(int(os.urandom(3).encode('hex'),16))
+	tempFile = open(".tempFile" + TEMP_FILE_NUM,'w')	
 	from Bio import Phylo
 	Phylo.write(njTree,tempFile,"newick")
 	tempFile.close()
 	import re
-	treeF = open("tempFile102903",'r')
+	treeF = open(".tempFile" + TEMP_FILE_NUM,'r')	
 	tree = treeF.read()
 	treeF.close()
-	import os
-	os.remove("tempFile102903")
+	os.remove(".tempFile" +TEMP_FILE_NUM)
 
 	tree = re.sub("Inner[0-9]+:[0-9\.]+","",tree)
 	tree = re.sub(":[0-9\.]+","",tree)
