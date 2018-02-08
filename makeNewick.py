@@ -59,7 +59,7 @@ def writeNewick(species, distance,output):
 	treeF.close()
 	os.remove(".tempFile" +TEMP_FILE_NUM)
 
-	tree = re.sub("Inner[0-9]+:[0-9\.]+","",tree)
+	tree = re.sub("Inner[0-9]+:[-0-9\.]+","",tree)
 	tree = re.sub(":[0-9\.]+","",tree)
 	tree = re.sub("_"," ",tree)
 	outputFile.write(tree)
