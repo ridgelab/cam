@@ -35,7 +35,7 @@ Step 4:
 Infer the phylogeny of these species from the Open Tree of Life.
 See README_getOTLtree for more information.
 The recommended method is:
-python getOTLtree.py -i output.nwk  -o OTL.nwk
+python getOTLtree.py -i output.nwk  -o OTL.nwk -e
 
 Step 5:
 Compare the recovered phylogeny using cam.py with the Open Tree of Life.
