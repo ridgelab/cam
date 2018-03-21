@@ -68,7 +68,7 @@ By default, a list of species that could not be included in the reference tree i
 Example usage:
 python getOTLtree.py -i testFiles/OTL/test.nwk  -e -o outputName
 python getOTLtree.py -i testFiles/OTL/speciesNames.txt
-python getOTLtree.py -i speciesNames.txt -e
+python getOTLtree.py -i testFiles/OTL/speciesNames.txt -e
 
 
 Running the first of the above commands will produce an output file for each tree in the input file
