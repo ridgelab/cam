@@ -31,6 +31,10 @@ Recover a phylogeny using the distance matrix.
 We provide a script to recover a phylogeny using BioPython, makeNewick.py.
 python makeNewick.py -i output -o output.nwk
 
+If you are using your own distance matrix in phylip format (instead of CSV format produced by CAM),
+specify the -p (phylip) option:
+python makeNewick.py -p -i output.phylip -o output.nwk
+
 Step 4:
 Infer the phylogeny of these species from the Open Tree of Life.
 See README_getOTLtree for more information.

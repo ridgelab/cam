@@ -3,16 +3,21 @@ import sys
 import argparse
 from getCodonAversion import getCodonAversion
 from multiprocessing import Process, current_process, freeze_support, Pool
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
+from Bio.Alphabet import generic_rna
 
-def makeAllPossibleCodons(rna):
+
+def makeAllPossibleCodons(args):
 	'''
 	Input is a flag to specify if the sequence is DNA or RNA.
 	Returns a set of all 64 possible codons.
 	'''
-
+	if args.amino or args.aa:
+		return set(['A','R','N','D','B','C','E','Q','Z','G','H','I','L','K','M','F','P','S','T','W','Y','V'])
 	from itertools import product
 	codons = product("ACGT",repeat=3)
-	if rna:
+	if args.rna:
 		codons = product("ACGU",repeat=3)
 	codonsComb = set()
 	for c in codons:
@@ -31,6 +36,8 @@ def parseArgs():
 	parser.add_argument("-o",help="Output File",action="store",dest="output", required=False)
 	parser.add_argument("-p",help="Percent of codon aversion tuples Shared By Species",action="store",dest="percent", type=int, default=0.05, required=False)
 	parser.add_argument("-rna",help="Flag for RNA sequences",action="store_true",dest="rna", required=False)
+	parser.add_argument("-a",help="Flag for amino acid sequences",action="store_true",dest="amino", required=False)
+	parser.add_argument("-aa",help="Flag for Amino Acid Motifs (From DNA/RNA)",action="store_true",dest="aa", required=False)
 	parser.add_argument("-w",help="Writes the distance matrix immediately to the output file. Header will be at the bottom.",action="store_false",dest="write", required=False) 
 	args = parser.parse_args()
 	
@@ -58,13 +65,37 @@ def readOneFile(inputFile):
 		for line in input:
 			if line[0] =='>':
 				if sequence !="":
-					setOfTuples.add(getCodonAversion(sequence,codonsComb))
+					if args.aa:
+						aa =""
+						if args.rna:
+							rna = Seq(sequence,generic_rna)
+							aa = str(rna.translate())
+						else:
+							seq = Seq(sequence,generic_dna)
+							aa = str(seq.translate())
+						setOfTuples.add(tuple(set(list(aa))))
+					elif args.amino:
+						setOfTuples.add(tuple(set(list(sequence))))
+					else:
+						setOfTuples.add(getCodonAversion(sequence,codonsComb))
 				header = line.strip()
 				sequence = ""
 				continue
 			sequence +=line.upper().strip()
 		if sequence != "":
-			setOfTuples.add(getCodonAversion(sequence, codonsComb))
+			if args.aa:
+				aa =""
+				if args.rna:
+					rna = Seq(sequence,generic_rna)
+					aa = str(rna.translate())
+				else:
+					seq = Seq(sequence,generic_dna)
+					aa = str(seq.translate())
+				setOfTuples.add(tuple(set(list(aa))))
+			elif args.amino:
+				setOfTuples.add(tuple(set(list(sequence))))
+			else:
+				setOfTuples.add(getCodonAversion(sequence, codonsComb))
 			sequence = ""
 	except Exception: #If the input file is malformatted, do not stop the program.
 		input.close()
@@ -167,7 +198,7 @@ if __name__ =='__main__':
 	'''
 
 	args = parseArgs()
-	codonsComb = makeAllPossibleCodons(args.rna)
+	codonsComb = makeAllPossibleCodons(args)
 	fileToSet = readInputFiles(args)
 	writeDistanceMatrix(args)
 

@@ -19,9 +19,10 @@ ARGUMENT OPTIONS:
 	-o OUTPUT             Output File
 	-t THREADS            Number of Cores
 	-p PERCENT            Percent of codon aversion tuples that must overlap between species
-	-c OCCURANCES         Number of Occurances
 	-w WRITE         	  Immediately writes the distance matrix. Header will be on the bottom.
 	-rna                  Flag for RNA sequences
+	-a					  Flag for amino acid sequences (Not Recommended)
+	-aa					  Flag to convert DNA/RNA to amino acid protein sequence (Not Recommended)
 
 ##########################
 
@@ -38,6 +39,8 @@ Python libraries that must be installed include:
 6. itertools
 7. os (optional if using -id option)
 8. gzip (optional if using gzip files)
+9. Bio.Seq
+10. Bio.Alphabet
 
 If any of those libraries is not currently in your Python Path, use the following command:
 pip install --user [library_name]

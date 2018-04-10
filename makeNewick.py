@@ -18,15 +18,31 @@ def checkTempNum(TEMP_FILE_NUM):
 	return False
 
 
-def getSpeciesDistances(fileName):
+def getSpeciesDistances(args):
 	'''
 	Input is the path to the distance matrix.
-	Returns a list of species names and the top half of the distance matrix.
+	Returns a list of species names and the bottom half of the distance matrix.
 	'''
-	inputFile = open(fileName,'r')
+	if args.phylip:
+		species = []
+		distance = []
+		inputFile = open(args.input,'r')
+		inputFile.readline()
+		pos = 1 
+		for line in inputFile:
+			distance.append(map(float,line[10:].strip().split(" "))[0:pos])
+			species.append(line[0:10].strip())
+			pos +=1
+		print species
+		for x in distance:
+			print x
+		return species,distance
+			
+
+	inputFile = open(args.input,'r')
 	species = inputFile.readline().strip().split(',')[1:]
 	distance = []
-	pos = 2 #Start at position 2 because position 0 is the species name and position 1 is always 0 (distance to itself).
+	pos = 2 #Start at position 2 because position 0 is the species name and distance to itself (0.0) needs to be included.
 	for line in inputFile:
 		distance.append(map(float,line.strip().split(",")[1:pos]))
 		pos +=1 ####Commented out when only top of matrix present
@@ -60,7 +76,7 @@ def writeNewick(species, distance,output):
 	os.remove(".tempFile" +TEMP_FILE_NUM)
 
 	tree = re.sub("Inner[0-9]+:[-0-9\.]+","",tree)
-	tree = re.sub(":[0-9\.]+","",tree)
+	tree = re.sub(":[-0-9\.]+","",tree)
 	tree = re.sub("_"," ",tree)
 	outputFile.write(tree)
 	if args.output:
@@ -74,6 +90,7 @@ def parseArgs():
 	parser = argparse.ArgumentParser(description='Make Newick File from Distance Matrix.')
 	parser.add_argument("-i",help="Input Fasta Files",action="store", dest="input", required=True)
 	parser.add_argument("-o",help="Output File",action="store",dest="output", required=False)
+	parser.add_argument("-p",help="Phylip format",action="store_true",dest="phylip", required=False)
 	args = parser.parse_args()
 	
 	return args
@@ -86,5 +103,5 @@ if __name__ =='__main__':
 	'''
 	args = parseArgs()
 	fileName = sys.argv[1]
-	species,distance = getSpeciesDistances(args.input)
+	species,distance = getSpeciesDistances(args)
 	writeNewick(species,distance,args.output)
