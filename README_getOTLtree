@@ -1,3 +1,15 @@
+
+
+
+NOTE: The Open Tree of Life just updated its API, causing the curl scripts
+in this file to stop working. We are waiting for some issues to be resolved with
+the Open Tree of Life API v3 and then we will revise our parser to match their URL responses.
+In the meantime, this program will not work.
+
+
+
+
+
 ##########################
 
 Retrieve Open Tree of Life Phylogenetic Reference Tree
