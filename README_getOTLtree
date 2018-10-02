@@ -1,21 +1,7 @@
-
-
-
-NOTE: The Open Tree of Life just updated its API, causing the curl scripts
-in this file to stop working. We are waiting for some issues to be resolved with
-the Open Tree of Life API v3 and then we will revise our parser to match their URL responses.
-In the meantime, this program will not work.
-
-
-
-
-
 ##########################
 
 Retrieve Open Tree of Life Phylogenetic Reference Tree
 getOTLree.py
-Created By: Lauren McKinnon
-Email: laurenmckinnon77@gmail.com
 
 ##########################
 
@@ -34,13 +20,14 @@ ARGUMENT OPTIONS:
 
 REQUIREMENTS:
 
-getOTLtree.py uses Python version 2.7
+getOTLtree.py uses Python version 3.5
 
 Python libraries that must be installed include:
 1. sys
 2. argparse
 3. requests,json
 4. re
+5. ete3
 
 If any of those libraries is not currently in your Python Path, use the following command:
 pip install --user [library_name]

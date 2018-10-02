@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#python 3.5
+
+from ete3 import Tree
 import sys
 import argparse
 import requests,json
@@ -47,12 +50,12 @@ def removeDuplicates(matches,allOttIDs):
 		matchList = matches[index]
 		search_string = matchList[0]["search_string"]
 		ott_id = matchList[0]["taxon"]["ott_id"]
-		print "Found multiple results for " + matchList[0]["matched_name"] + ". Please select the number for the species you want to keep."
-		print 'Type "u" to undo.'
+		print ("Found multiple results for " + matchList[0]["matched_name"] + ". Please select the number for the species you want to keep.")
+		print ('Type "u" to undo.')
 		count = 1
 		matchesDict = {}
 		for match in matchList:
-			print str(count) + ". " + match["taxon"]["unique_name"]
+			print (str(count) + ". " + match["taxon"]["unique_name"])
 			matchesDict[count] = match["taxon"]["unique_name"]
 			count += 1
 			
@@ -75,21 +78,21 @@ def getUserInput(index,count):
 	'''
 	badInput = True
 	while badInput == True:
-		answer = raw_input()
+		answer = input()
 		if answer == "u":
 			if index != 0:
 				return "u"
 			else:
-				print "Sorry, nothing to undo. Please select a species."
+				print ("Sorry, nothing to undo. Please select a species.")
 		else:
 			try:
 				val = int(answer)
 				if val < count and val > 0:
 					badInput = False
 				else:
-					print "Invalid input. Please enter the number of your choice."
+					print ("Invalid input. Please enter the number of your choice.")
 			except ValueError:
-				print "Invalid input. Please enter the number of your choice."
+				print ("Invalid input. Please enter the number of your choice.")
 
 	return answer
 
@@ -113,8 +116,24 @@ def makeNewickTree(allOttIDs):
 			return False
 		data = '{"ott_ids":' + str(allOttIDs) + '}'
 		response = requests.post(url,headers=headers,data=data).text
-	newick = re.sub("_ott\d+","",response.split("newick\" : \"")[1].split(";\"")[0]) + ";"
-	return newick
+	response = response.replace("\n","").split(";")[0].split(": \"")[1]
+	newick = response + ";"
+	newick = re.sub("\)[0-9_A-z]+",")",newick)
+	newick = re.sub("_ott[0-9]+","",newick)
+	newick = re.sub("\)\'[^\']+\'",")",newick)
+	newick = re.sub("\'([A-z]+) ([A-z]+)[^\']+\'","\1_\2",newick)
+	names= re.findall("[\(,][A-z_]+[\),]",newick)
+	names = [n[1:-1] for n in names]
+	out = open("tempTree","w") #Eventually take out temp file
+	out.write(newick)
+	out.close()
+	tree= Tree('tempTree')
+	tree.prune(names)
+	t=tree.write()
+	t = re.sub(":1","",t)
+	t = re.sub("\)1",")",t)
+	t = re.sub("_"," ",t)
+	return t
 
 def printSpeciesNotFound(newick,specieslist,outfile):
 	'''
@@ -146,12 +165,12 @@ def readFile(args):
 		line = line.strip().replace("(","").replace(";","").replace(")","").replace("_"," ")
 		specieslist.extend(line.split(","))
 	if (len(specieslist) <= 2):
-		print "Sorry, we didn't find enough species on line " + str(linenumber) + " to make a tree."
+		print ("Sorry, we didn't find enough species on line " + str(linenumber) + " to make a tree.")
 		return
 	allOttIDs = formatOTTidRequests(specieslist)
 	newick = makeNewickTree(allOttIDs)
 	if newick == False:
-		print "Sorry, we didn't find enough species on line " + str(linenumber) + " to make a tree."
+		print ("Sorry, we didn't find enough species on line " + str(linenumber) + " to make a tree.")
 		return
 	newick = re.sub("\)[A-z_]+",")",newick)
 	newick = re.sub("_"," ",newick)
