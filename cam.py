@@ -1,12 +1,21 @@
 #! /usr/bin/env python
 import sys
 import argparse
-from getCodonAversion import getCodonAversion
 from multiprocessing import Process, current_process, freeze_support, Pool
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_dna
 from Bio.Alphabet import generic_rna
+import re
 
+def getCodonAversion(sequence, possibleCodons):
+	'''
+	Takes two arguments: A DNA or RNA sequence, and a set of all possible codons.
+	Subtracts a set of all codons in the sequence from the set of all possible codons.
+	Returns a tuple of the subtracted set. This tuple represents all codons not found in the sequence.
+	'''
+	foundCodons= set(re.findall("...",sequence))
+	motif = tuple(possibleCodons - foundCodons)
+	return tuple(motif)
 
 def makeAllPossibleCodons(args):
 	'''
@@ -42,7 +51,7 @@ def parseArgs():
 	args = parser.parse_args()
 	
 	if not args.input and not args.inputDir:
-		print "You must supply an input file with either -i or -id"
+		print ("You must supply an input file with either -i or -id")
 		sys.exit()
 	return args
 
@@ -63,6 +72,8 @@ def readOneFile(inputFile):
 		else:
 			input = open(inputFile,'r')
 		for line in input:
+			if isinstance(line,bytes):
+				line=line.decode('UTF-8')
 			if line[0] =='>':
 				if sequence !="":
 					if args.aa:
@@ -129,7 +140,7 @@ def readInputFiles(args):
 			path += '/'
 		allInputFiles = [path +i for i in allFasta]
 	if len(allInputFiles) < 2:
-		print "At least two input files are required"
+		print ("At least two input files are required")
 		sys.exit()
 	temp =pool.map(readOneFile,allInputFiles)
 	for x in temp:
@@ -140,7 +151,7 @@ def readInputFiles(args):
 		allSets |=setOfTuples
 		fileToSet[inputFile] = setOfTuples
 	if args.output:
-		print "Total Number of motifs:",len(allSets)
+		print ("Total Number of motifs:",len(allSets))
 	return fileToSet
 
 def writeDistanceMatrix(args):

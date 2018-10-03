@@ -33,9 +33,9 @@ def getSpeciesDistances(args):
 			distance.append(map(float,line[10:].strip().split(" "))[0:pos])
 			species.append(line[0:10].strip())
 			pos +=1
-		print species
+		print (species)
 		for x in distance:
-			print x
+			print (x)
 		return species,distance
 			
 

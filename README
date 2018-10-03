@@ -28,7 +28,7 @@ ARGUMENT OPTIONS:
 
 REQUIREMENTS:
 
-cam.py uses Python version 2.7
+cam.py uses Python version 3.5
 
 Python libraries that must be installed include:
 1. sys
