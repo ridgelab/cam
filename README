@@ -39,8 +39,8 @@ Python libraries that must be installed include:
 6. itertools
 7. os (optional if using -id option)
 8. gzip (optional if using gzip files)
-9. Bio.Seq
-10. Bio.Alphabet
+9. Bio.Seq (biopython)
+10. Bio.Alphabet (biopython)
 
 If any of those libraries is not currently in your Python Path, use the following command:
 pip install --user [library_name]
