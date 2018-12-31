@@ -188,6 +188,5 @@ if __name__ =='__main__':
     Main.
     '''
     args = parseArgs()
-    fileName = sys.argv[1]
     species,distance = getSpeciesDistances(args)
     writeNewick(species,distance,args.output)
