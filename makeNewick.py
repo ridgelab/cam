@@ -57,7 +57,8 @@ def recalibrateDistance(distance,species,values):
 def getTree(species, distance): 
     lastLength = len(species)    
     while len(species)>1:
-        sys.stderr.write("Species Remaining=" + str(len(species)) +"\n" )
+        if args.verbose:
+            sys.stderr.write("Species Remaining=" + str(len(species)) +"\n" )
         values =getMin(distance,species)
         distance,species = recalibrateDistance(distance,species,values)
         if len(species) == lastLength:
@@ -65,30 +66,28 @@ def getTree(species, distance):
         lastLength = len(species)
     return species
 
-def largeSpeciesTree(args):
-    fileNames = []
+def largeSpeciesTree(args,fileNames,distance):
     matrix = dict()
-    inputFile = open(args.input)
     output = sys.stdout
     if args.output:
         output = open(args.output,'w')
-    fileNames = inputFile.readline().strip().split(",")[1:]
     numToDel = 0
-    for line in inputFile:
-        sys.stderr.write("Species Added to Matrix=" + str(len(matrix)) +"\n" )
-        numToDel +=1
-        distances = line.strip().split(",")
-        species = distances[0]
+    for x in range(len(distance)):
+        species = fileNames[x]
+        distances = distance[x]
+        if args.verbose:
+            sys.stderr.write("Species Added to Matrix=" + str(len(matrix)) +"\n" )
         matrix[species] = []
-        distances = map(float, distances[1:])
-        num = 0
-        for x in distances:
-            if num<numToDel:
-                matrix[species].append(1) #Max value is 1 in matrix
-                num +=1
+        distances = list(map(float, distances))
+        for x in range(len(fileNames)):
+            if x < len(distances):
+                dist = distances[x]
+                if dist !=0:
+                    matrix[species].append(dist)
+                else:
+                    matrix[species].append(1)
             else:
-                matrix[species].append(x)
-                continue
+                matrix[species].append(1)
     distTree = getTree(fileNames,matrix)    
     newTree = ""
     if len(distTree)>1:
@@ -115,7 +114,7 @@ def getSpeciesDistances(args):
         inputFile.readline()
         pos = 1 
         for line in inputFile:
-            distance.append(list(map(float,line[10:].strip().split(" "))[0:pos]))
+            distance.append(list(map(float,line[10:].strip().split(" ")))[0:pos])
             species.append(line[0:10].strip())
             pos +=1
         return species,distance
@@ -123,15 +122,12 @@ def getSpeciesDistances(args):
 
     inputFile = open(args.input,'r')
     species = inputFile.readline().strip().split(',')[1:]
-    if len(species) >500: #if it's a large tree
-        inputFile.close()
-        largeSpeciesTree(args)
-        sys.exit()
     distance = []
     pos = 2 #Start at position 2 because position 0 is the species name and distance to itself (0.0) needs to be included.
     for line in inputFile:
         distance.append(list(map(float,line.strip().split(",")[1:pos])))
         pos +=1 ####Commented out when only top of matrix present
+    inputFile.close()
     return species, distance
 
 def writeNewick(species, distance,output):
@@ -177,6 +173,8 @@ def parseArgs():
     parser.add_argument("-i",help="Input Fasta Files",action="store", dest="input", required=True)
     parser.add_argument("-o",help="Output File",action="store",dest="output", required=False)
     parser.add_argument("-p",help="Phylip format",action="store_true",dest="phylip", required=False)
+    parser.add_argument("-f",help="Use faster neighbor-joining algorithm",action="store",type=int,dest="largeTree", default=500,required=False)
+    parser.add_argument("-v",help="Verbose for faster neighbor-joining algorithm",action="store_true",dest="verbose",required=False)
     args = parser.parse_args()
     
     return args
@@ -189,4 +187,7 @@ if __name__ =='__main__':
     '''
     args = parseArgs()
     species,distance = getSpeciesDistances(args)
-    writeNewick(species,distance,args.output)
+    if len(species) >args.largeTree: #if it's a large tree
+        largeSpeciesTree(args,species,distance)
+    else:
+        writeNewick(species,distance,args.output)
