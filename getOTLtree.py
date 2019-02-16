@@ -124,15 +124,17 @@ def makeNewickTree(allOttIDs):
 	newick = re.sub("\'([A-z]+) ([A-z]+)[^\']+\'","\1_\2",newick)
 	names= re.findall("[\(,][A-z_]+[\),]",newick)
 	names = [n[1:-1] for n in names]
-	out = open("tempTree","w") #Eventually take out temp file
+	out = open(".tempTree","w") 
 	out.write(newick)
 	out.close()
-	tree= Tree('tempTree')
+	tree= Tree('.tempTree')
 	tree.prune(names)
 	t=tree.write()
 	t = re.sub(":1","",t)
 	t = re.sub("\)1",")",t)
 	t = re.sub("_"," ",t)
+	import os
+	os.remove(".tempTree") #removes the temporary tree file
 	return t
 
 def printSpeciesNotFound(newick,specieslist,outfile):
